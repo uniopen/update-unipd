@@ -1,0 +1,5 @@
+.DS_Store
+__pycache__/
+archive/
+env/
+update_mensa_unipd.py
