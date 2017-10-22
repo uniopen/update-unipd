@@ -21,8 +21,6 @@ def get_cal():
         else:
             listCal.append(0)
     mensaDict = {}
-    # print(listCal)
-    listCal = [1 for x in range(14)]
     if listCal is not None:
         x = 0
         for mensa in mensaList:
