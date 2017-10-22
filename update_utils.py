@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 
+mensaList = ['sanfrancesco', 'piovego', 'agripolis', 'acli', 'belzoni', 'forcellini', 'murialdo']
 
-
-def getcal():
+def get_cal():
     soup = BeautifulSoup(requests.get("http://www.esupd.gov.it/it").content, "html.parser")
     listFull = []
     listPart = []
@@ -22,9 +22,8 @@ def getcal():
             listCal.append(0)
     mensaDict = {}
     # print(listCal)
-    # listCal = [1 for x in range(14)]
+    listCal = [1 for x in range(14)]
     if listCal is not None:
-        mensaList = ['sanfrancesco', 'piovego', 'agripolis', 'acli', 'belzoni', 'forcellini', 'murialdo']
         x = 0
         for mensa in mensaList:
             mensaDict[mensa] = {}
@@ -34,13 +33,39 @@ def getcal():
     return mensaDict
 
 
-
-
-# a = 0
-# if cal is not None:
-#     for x in range(7):
-#         mensaDict[mensaList[x]]['calendario']['pranzo'] = cal[a]
-#         mensaDict[mensaList[x]]['calendario']['cena'] = cal[a + 1]
-#         a += 2
-
-# print(mensaDict)
+def get_menu():
+    rep = '<span style="visibility:hidden">:</span>'
+    nomenu = 'Menu non pubblicato su www.esupd.gov.it/'
+    errmenu = ['Niente menu, errore su www.esupd.gov.it/']
+    mensaMenu = {}
+    for x in range(len(mensaList)):
+        mensaMenu = {}
+        mid = x + 1
+        mensaid = '0' + str(mid)
+        completo = {"primo": [], "secondo": [], "contorno": [], "dessert": []}
+        try:
+            url = "http://www.esupd.gov.it/it/Pagine/Menu.aspx?idmenu=ME_%s" % mensaid
+            soup = BeautifulSoup(requests.get(url).content, "html.parser")
+            menu = []
+            for i in soup.find_all("h2"):
+                portata = i.text.split()[0].lower()
+                for j in i.next_siblings:
+                    if j.name == "h2":
+                        break
+                    if j.name == "ul":
+                        a = str(j)
+                        menu += (a.split("<li>"))
+                        for piatto in range(len(menu)):
+                            if "h3" in menu[piatto]:
+                                menu[piatto] = menu[piatto].replace(rep, ' ')
+                                txt = menu[piatto][4:].split("<")[0]
+                                completo[portata].append(txt.replace('*',''))
+                    menu = []
+            for key in completo:
+                if completo[key] == []:
+                    completo[key] = [nomenu]
+        except:
+            for key in completo:
+                completo[key] = errmenu
+        mensaMenu[mensaList[x]] = completo
+    return mensaMenu

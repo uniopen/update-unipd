@@ -1,25 +1,30 @@
 import boto3
 import json
 from botocore.exceptions import ClientError
-from update_utils import getcal
+from update_utils import get_cal, get_menu
 
 client = boto3.client('s3',
                       region_name='eu-west-1')
 
 def main(event, context):
     if event.get("what") == "calendar": 
-        mensaCal = getcal()
+        mensaCal = get_cal()
         print(mensaCal)
         response = client.get_object(Bucket="uniopen-data", Key="unipd/mensa.json")
         details = json.loads(response['Body'].read())
-        print(details)
         for mensa in mensaCal:
             details[mensa]["calendario"] = mensaCal[mensa]
-        print(details)
-
         r = client.put_object(Bucket="uniopen-data", Key="unipd/mensa.json", Body=json.dumps(details))
-        print(r)
+
+    elif event.get("what") == "menu": 
+        mensaMenu = get_menu()
+        print(mensaMenu)
+        response = client.get_object(Bucket="uniopen-data", Key="unipd/mensa.json")
+        details = json.loads(response['Body'].read())
+        for mensa in mensaMenu:
+            details[mensa]["menu"] = mensaMenu[mensa]
+        r = client.put_object(Bucket="uniopen-data", Key="unipd/mensa.json", Body=json.dumps(details))
 
     return "Done"
 
-# main({"what": "calendar"}, 1)
+main({"what": "menu"}, 1)
