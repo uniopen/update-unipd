@@ -37,8 +37,8 @@ def get_menu():
     errmenu = ['Niente menu, errore su www.esupd.gov.it/']
     mensaMenu = {}
     for x in range(len(mensaList)):
-        mensaMenu = {}
         mid = x + 1
+        print(mid)
         mensaid = '0' + str(mid)
         completo = {"primo": [], "secondo": [], "contorno": [], "dessert": []}
         try:
@@ -67,3 +67,5 @@ def get_menu():
                 completo[key] = errmenu
         mensaMenu[mensaList[x]] = completo
     return mensaMenu
+
+print(get_menu())
